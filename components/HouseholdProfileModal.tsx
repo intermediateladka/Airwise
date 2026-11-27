@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { X } from 'lucide-react';
+import { useDialogA11y } from '@/hooks/use-dialog-a11y';
 import type { Translations } from '@/lib/i18n';
 import type { HouseholdProfile, LanguageCode, MaskType } from '@/lib/types';
 import { ProfileStepAlertsPrivacy } from './profile/ProfileStepAlertsPrivacy';
@@ -22,9 +23,6 @@ interface HouseholdProfileModalProps {
   onDeleteAllData: () => Promise<void>;
 }
 
-const FOCUSABLE_SELECTOR =
-  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
 export function HouseholdProfileModal({
   open,
   initialProfile,
@@ -44,40 +42,7 @@ export function HouseholdProfileModal({
   const [validationError, setValidationError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Trap focus inside modal, close on Escape, and restore focus to trigger on close
-  useEffect(() => {
-    if (!open) return;
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    const container = dialogRef.current;
-    const focusables = container?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
-    focusables?.[0]?.focus();
-
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-        return;
-      }
-      if (e.key !== 'Tab' || !container) return;
-      const items = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
-      if (items.length === 0) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      previouslyFocused?.focus();
-    };
-  }, [open, onClose]);
+  useDialogA11y(open, dialogRef, onClose);
 
   if (!open) return null;
 
@@ -182,10 +147,10 @@ export function HouseholdProfileModal({
                 type="button"
                 aria-current={active ? 'step' : undefined}
                 onClick={() => setStep(stepNum)}
-                className={`rounded-md px-2 py-1.5 text-center text-xs font-medium transition-colors whitespace-nowrap truncate ${
+                className={`truncate whitespace-nowrap rounded-md px-2 py-1.5 text-center text-xs font-medium transition-colors ${
                   active
                     ? 'bg-white text-teal-800 shadow-xs dark:bg-slate-800 dark:text-teal-300'
-                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100'
                 }`}
               >
                 {label}

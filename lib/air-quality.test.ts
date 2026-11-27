@@ -41,7 +41,11 @@ test('computeInversionRisk identifies winter temperature inversions', () => {
 });
 
 test('getEffectiveAlertThreshold lowers threshold for vulnerable household members', () => {
-  const vulnerable = { ...DEFAULT_HOUSEHOLD_PROFILE, alertAqiThreshold: 180, hasAsthmaOrRespiratory: true };
+  const vulnerable = {
+    ...DEFAULT_HOUSEHOLD_PROFILE,
+    alertAqiThreshold: 180,
+    hasAsthmaOrRespiratory: true,
+  };
   assert.equal(getEffectiveAlertThreshold(vulnerable), 120);
 
   const healthyOnly = {

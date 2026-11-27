@@ -3,12 +3,7 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { Send, ShieldCheck } from 'lucide-react';
 import type { Translations } from '@/lib/i18n';
-import type {
-  AirQualitySnapshot,
-  ChatMessage,
-  HouseholdProfile,
-  LanguageCode,
-} from '@/lib/types';
+import type { AirQualitySnapshot, ChatMessage, HouseholdProfile, LanguageCode } from '@/lib/types';
 
 interface AssistantViewProps {
   snapshot: AirQualitySnapshot;
@@ -98,9 +93,7 @@ export function AssistantView({
       };
       onMessagesChange([...nextHistory, replyMsg]);
     } catch (err) {
-      setErrorMsg(
-        err instanceof Error ? err.message : 'Unable to send question right now.'
-      );
+      setErrorMsg(err instanceof Error ? err.message : 'Unable to send question right now.');
     } finally {
       setSending(false);
     }
@@ -119,16 +112,13 @@ export function AssistantView({
             <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50">
               {t.assistantTitle}
             </h1>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {t.assistantSubtitle}
-            </p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{t.assistantSubtitle}</p>
           </div>
-          <div className="text-xs text-slate-500 font-mono tabular-nums dark:text-slate-400">
+          <div className="font-mono text-xs tabular-nums text-slate-600 dark:text-slate-400">
             {snapshot.locationName} · AQI {snapshot.aqi} · PM2.5 {snapshot.pm25} µg/m³
           </div>
         </div>
 
-        {/* Suggested prompts */}
         <div className="mt-4 flex flex-wrap gap-2">
           {suggestions.map((q) => (
             <button
@@ -136,7 +126,7 @@ export function AssistantView({
               type="button"
               disabled={sending}
               onClick={() => void submitQuestion(q)}
-              className="min-h-[40px] rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-left text-xs font-medium text-slate-700 transition-colors hover:border-teal-600 hover:text-teal-800 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-teal-400 dark:hover:text-teal-300"
+              className="min-h-[40px] rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-left text-xs font-medium text-slate-800 transition-colors hover:border-teal-600 hover:text-teal-800 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-teal-400 dark:hover:text-teal-300"
             >
               {q}
             </button>
@@ -144,14 +134,15 @@ export function AssistantView({
         </div>
       </div>
 
-      {/* Conversation thread */}
       <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#131C26]">
         <div
-          className="max-h-[440px] min-h-[280px] space-y-5 overflow-y-auto p-6"
+          role="log"
           aria-live="polite"
+          aria-label={isHi ? 'सहायक वार्तालाप' : 'Assistant conversation'}
+          className="max-h-[440px] min-h-[280px] space-y-5 overflow-y-auto p-6"
         >
           {messages.length === 0 ? (
-            <div className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">
+            <div className="py-10 text-center text-sm text-slate-600 dark:text-slate-400">
               {isHi
                 ? 'ऊपर दिए गए किसी प्रश्न को चुनें या नीचे अपना सवाल लिखें। उत्तर आपके लाइव AQI और परिवार प्रोफ़ाइल के आधार पर होगा।'
                 : 'Select a suggested question above or type your own below. Every answer uses your live AQI forecast and household profile.'}
@@ -160,11 +151,9 @@ export function AssistantView({
             messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex flex-col ${
-                  msg.role === 'user' ? 'items-end' : 'items-start'
-                }`}
+                className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
               >
-                <div className="mb-1 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <div className="mb-1 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                   <span className="font-medium">
                     {msg.role === 'user' ? (isHi ? 'आप' : 'You') : 'AirWise'}
                   </span>
@@ -184,10 +173,10 @@ export function AssistantView({
                   )}
                 </div>
                 <div
-                  className={`max-w-[85%] rounded-xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${
+                  className={`max-w-[85%] whitespace-pre-line rounded-xl px-4 py-3 text-sm leading-relaxed ${
                     msg.role === 'user'
                       ? 'bg-teal-700 text-white dark:bg-teal-600'
-                      : 'border border-slate-200 bg-slate-50 text-slate-800 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100'
+                      : 'border border-slate-200 bg-slate-50 text-slate-900 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100'
                   }`}
                 >
                   {msg.content}
@@ -197,14 +186,21 @@ export function AssistantView({
           )}
 
           {sending && (
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <span>{isHi ? 'लाइव AQI डेटा जाँचा जा रहा है...' : 'Checking live AQI forecast and household context...'}</span>
+            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+              <span>
+                {isHi
+                  ? 'लाइव AQI डेटा जाँचा जा रहा है...'
+                  : 'Checking live AQI forecast and household context...'}
+              </span>
             </div>
           )}
         </div>
 
         {errorMsg && (
-          <div role="alert" className="border-t border-rose-200 bg-rose-50 px-6 py-3 text-xs font-medium text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-200">
+          <div
+            role="alert"
+            className="border-t border-rose-200 bg-rose-50 px-6 py-3 text-xs font-medium text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-200"
+          >
             {errorMsg}
           </div>
         )}
@@ -223,12 +219,12 @@ export function AssistantView({
             onChange={(e) => setInput(e.target.value)}
             maxLength={500}
             placeholder={t.assistantPlaceholder}
-            className="min-h-[44px] flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-700/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+            className="min-h-[44px] flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-600 focus:border-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-700/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400"
           />
           <button
             type="submit"
             disabled={sending || !input.trim()}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-teal-800 disabled:opacity-50 whitespace-nowrap shrink-0 dark:bg-teal-600 dark:hover:bg-teal-500"
+            className="inline-flex min-h-[44px] shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-teal-800 disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500"
           >
             <Send className="h-4 w-4" aria-hidden="true" />
             <span>{t.assistantSend}</span>
@@ -236,12 +232,15 @@ export function AssistantView({
         </form>
       </div>
 
-      <div className="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400">
-        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-teal-700 dark:text-teal-400" aria-hidden="true" />
+      <div className="flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-400">
+        <ShieldCheck
+          className="mt-0.5 h-4 w-4 shrink-0 text-teal-700 dark:text-teal-400"
+          aria-hidden="true"
+        />
         <p>
           {isHi
-            ? 'AirWise सामान्य पर्यावरण मार्गदर्शन देता है, चिकित्सा सलाह नहीं। अस्थमा या हृदय लक्षण बढ़ने पर डॉक्टर से मिलें।'
-            : 'AirWise provides general environmental guidance, not medical advice. Consult a doctor for respiratory or heart symptoms.'}
+            ? 'AI-जनित पर्यावरण मार्गदर्शन (चिकित्सा सलाह नहीं)। आधिकारिक CPCB/IMD/NDMA दिशानिर्देशों का पालन करें; आपात स्थिति: 112 / 108।'
+            : 'AI-generated environmental guidance (not medical advice). Follow official CPCB/IMD/NDMA advisories; emergency: 112 / 108.'}
         </p>
       </div>
     </div>

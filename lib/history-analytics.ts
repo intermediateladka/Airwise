@@ -58,9 +58,7 @@ export function computePresetDateRange(
 ): { startDate: string; endDate: string } {
   const clampedDays = Math.max(1, Math.min(90, Math.round(days)));
   const endDate =
-    endDateIso && parseUtcDateIso(endDateIso)
-      ? endDateIso
-      : new Date().toISOString().slice(0, 10);
+    endDateIso && parseUtcDateIso(endDateIso) ? endDateIso : new Date().toISOString().slice(0, 10);
   const startDate = shiftDateIso(endDate, -(clampedDays - 1));
   return { startDate, endDate };
 }
@@ -198,13 +196,7 @@ export function aggregateHourlyToDailyHistory(
   todayDateIso?: string
 ): DailyHistoryPoint[] {
   const cutoffDate = todayDateIso || new Date().toISOString().slice(0, 10);
-  const allUntilCutoff = aggregateHourlyToDailyRange(
-    times,
-    hAqi,
-    hPm25,
-    '1970-01-01',
-    cutoffDate
-  );
+  const allUntilCutoff = aggregateHourlyToDailyRange(times, hAqi, hPm25, '1970-01-01', cutoffDate);
   return allUntilCutoff.slice(-7);
 }
 
@@ -265,8 +257,7 @@ export function analyzeHistoryTrend(
 
   const aqiDeltaPct =
     earlierAqi > 0 ? Math.round(((recentAqi - earlierAqi) / earlierAqi) * 100) : 0;
-  const pm25DeltaPct =
-    earlierPm > 0 ? Math.round(((recentPm - earlierPm) / earlierPm) * 100) : 0;
+  const pm25DeltaPct = earlierPm > 0 ? Math.round(((recentPm - earlierPm) / earlierPm) * 100) : 0;
 
   let trendDirection: 'improving' | 'worsening' | 'stable' = 'stable';
   if (aqiDeltaPct <= -5) trendDirection = 'improving';

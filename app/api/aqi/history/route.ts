@@ -46,16 +46,10 @@ export async function GET(request: NextRequest) {
   const { limit, windowMs } = serverConfig.rateLimits.history;
   const rl = checkRateLimit(`aqi-history:${ip}`, limit, windowMs);
   if (!rl.allowed) {
-    return jsonError(
-      request,
-      429,
-      'Too many history requests. Please wait a minute.',
-      requestId,
-      {
-        'X-RateLimit-Remaining': '0',
-        'Retry-After': '60',
-      }
-    );
+    return jsonError(request, 429, 'Too many history requests. Please wait a minute.', requestId, {
+      'X-RateLimit-Remaining': '0',
+      'Retry-After': '60',
+    });
   }
 
   const sp = request.nextUrl.searchParams;
@@ -117,9 +111,7 @@ export async function GET(request: NextRequest) {
     const hAqi: Array<number | null> = Array.isArray(json?.hourly?.us_aqi)
       ? json.hourly.us_aqi
       : [];
-    const hPm25: Array<number | null> = Array.isArray(json?.hourly?.pm2_5)
-      ? json.hourly.pm2_5
-      : [];
+    const hPm25: Array<number | null> = Array.isArray(json?.hourly?.pm2_5) ? json.hourly.pm2_5 : [];
 
     const days = aggregateHourlyToDailyRange(times, hAqi, hPm25, startDate, endDate);
     if (days.length === 0) {

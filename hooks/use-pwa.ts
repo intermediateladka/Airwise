@@ -43,11 +43,7 @@ export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installedOverride, setInstalledOverride] = useState(false);
 
-  const isStandalone = useSyncExternalStore(
-    subscribeNoop,
-    getIsStandaloneSnapshot,
-    () => false
-  );
+  const isStandalone = useSyncExternalStore(subscribeNoop, getIsStandaloneSnapshot, () => false);
   const isIOS = useSyncExternalStore(subscribeNoop, getIsIOSSnapshot, () => false);
 
   useEffect(() => {
@@ -89,9 +85,5 @@ export function usePWAInstall() {
 }
 
 export function useOnlineStatus() {
-  return useSyncExternalStore(
-    subscribeOnline,
-    getOnlineSnapshot,
-    getOnlineServerSnapshot
-  );
+  return useSyncExternalStore(subscribeOnline, getOnlineSnapshot, getOnlineServerSnapshot);
 }

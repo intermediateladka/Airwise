@@ -35,14 +35,7 @@ const hourlyPointSchema = z.object({
   windKmh: z.number().finite().min(0).max(250),
 });
 
-const commuteModeEnum = z.enum([
-  'walk',
-  'bike',
-  'two_wheeler',
-  'car',
-  'public_transport',
-  'wfh',
-]);
+const commuteModeEnum = z.enum(['walk', 'bike', 'two_wheeler', 'car', 'public_transport', 'wfh']);
 
 const maskTypeEnum = z.enum(['none', 'cloth', 'surgical', 'n95', 'n99', 'kn95']);
 
@@ -53,12 +46,7 @@ const ventilationEnum = z.enum([
   'balcony_open',
 ]);
 
-const cookingFuelEnum = z.enum([
-  'lpg',
-  'png_piped',
-  'induction_electric',
-  'biomass_solid',
-]);
+const cookingFuelEnum = z.enum(['lpg', 'png_piped', 'induction_electric', 'biomass_solid']);
 
 const budgetEnum = z.enum(['low', 'medium', 'flexible']);
 

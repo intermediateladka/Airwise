@@ -49,13 +49,13 @@ export function ForecastChart({
         />
         <XAxis
           dataKey="axisLabel"
-          tick={{ fontSize: 11, fill: '#64748B' }}
+          tick={{ fontSize: 11, fill: '#475569' }}
           tickLine={false}
           axisLine={false}
           interval={horizon === '48h' ? 5 : 2}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: '#64748B' }}
+          tick={{ fontSize: 11, fill: '#475569' }}
           tickLine={false}
           axisLine={false}
           width={42}

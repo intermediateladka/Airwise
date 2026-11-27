@@ -77,9 +77,7 @@ export function sanitizeUserText(raw: string, maxLength = 500): string {
  * `<user_question>` or `<context_json>` prompt envelopes.
  */
 export function neutralizePromptDelimiters(raw: string, maxLength = 500): string {
-  return sanitizeUserText(raw, maxLength)
-    .replace(/</g, '‹')
-    .replace(/>/g, '›');
+  return sanitizeUserText(raw, maxLength).replace(/</g, '‹').replace(/>/g, '›');
 }
 
 export function detectPromptInjection(text: string): boolean {

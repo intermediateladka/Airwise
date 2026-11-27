@@ -1,12 +1,7 @@
 export type LanguageCode = 'en' | 'hi';
 
 export type AqiBandKey =
-  | 'good'
-  | 'moderate'
-  | 'sensitive'
-  | 'unhealthy'
-  | 'very_unhealthy'
-  | 'severe';
+  'good' | 'moderate' | 'sensitive' | 'unhealthy' | 'very_unhealthy' | 'severe';
 
 export interface AqiBandInfo {
   key: AqiBandKey;
@@ -68,29 +63,16 @@ export interface AirQualitySnapshot {
   history7d?: DailyHistoryPoint[];
 }
 
-export type CommuteMode =
-  | 'walk'
-  | 'bike'
-  | 'two_wheeler'
-  | 'car'
-  | 'public_transport'
-  | 'wfh';
+export type CommuteMode = 'walk' | 'bike' | 'two_wheeler' | 'car' | 'public_transport' | 'wfh';
 
 export type OutdoorExerciseHabit = 'none' | 'morning' | 'evening' | 'flexible';
 
 export type MaskType = 'none' | 'cloth' | 'surgical' | 'n95' | 'n99' | 'kn95';
 
 export type VentilationType =
-  | 'sealed_ac'
-  | 'standard_windows'
-  | 'cross_ventilated'
-  | 'balcony_open';
+  'sealed_ac' | 'standard_windows' | 'cross_ventilated' | 'balcony_open';
 
-export type CookingFuelType =
-  | 'lpg'
-  | 'png_piped'
-  | 'induction_electric'
-  | 'biomass_solid';
+export type CookingFuelType = 'lpg' | 'png_piped' | 'induction_electric' | 'biomass_solid';
 
 export type BudgetLevel = 'low' | 'medium' | 'flexible';
 

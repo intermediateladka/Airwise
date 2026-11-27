@@ -81,7 +81,9 @@ export function NowHeroCard({
               <span className="text-sm font-medium text-slate-600 dark:text-slate-400">US AQI</span>
             </div>
 
-            <div className={`inline-flex items-center gap-2 text-base font-semibold ${band.badgeTextClass}`}>
+            <div
+              className={`inline-flex items-center gap-2 text-base font-semibold ${band.badgeTextClass}`}
+            >
               <AqiCategoryIcon symbol={band.symbol} className="h-5 w-5" />
               <span>{bandLabel}</span>
             </div>

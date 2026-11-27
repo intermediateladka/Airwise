@@ -3,6 +3,7 @@ interface RateBucket {
   resetAt: number;
 }
 
+const MAX_BUCKETS = 2000;
 const buckets = new Map<string, RateBucket>();
 
 export interface RateLimitResult {
@@ -11,27 +12,32 @@ export interface RateLimitResult {
   resetAt: number;
 }
 
+function pruneAndCapBuckets(now: number): void {
+  if (buckets.size < MAX_BUCKETS) return;
+  for (const [k, v] of buckets.entries()) {
+    if (v.resetAt <= now) buckets.delete(k);
+  }
+  while (buckets.size >= MAX_BUCKETS) {
+    const oldestKey = buckets.keys().next().value;
+    if (oldestKey === undefined) break;
+    buckets.delete(oldestKey);
+  }
+}
+
 /**
- * Simple sliding-window in-memory rate limiter for API route protection.
+ * Bounded sliding-window in-memory rate limiter for API route protection.
+ * Hard-caps total stored keys to prevent memory exhaustion under spoofed-IP floods.
  */
-export function checkRateLimit(
-  key: string,
-  limit = 30,
-  windowMs = 60_000
-): RateLimitResult {
+export function checkRateLimit(key: string, limit = 30, windowMs = 60_000): RateLimitResult {
   const now = Date.now();
   const existing = buckets.get(key);
 
   if (!existing || existing.resetAt <= now) {
+    buckets.delete(key);
+    pruneAndCapBuckets(now);
     const fresh: RateBucket = { count: 1, resetAt: now + windowMs };
     buckets.set(key, fresh);
-    // Periodic pruning to avoid unbounded memory growth
-    if (buckets.size > 2000) {
-      for (const [k, v] of buckets.entries()) {
-        if (v.resetAt <= now) buckets.delete(k);
-      }
-    }
-    return { allowed: true, remaining: limit - 1, resetAt: fresh.resetAt };
+    return { allowed: true, remaining: Math.max(0, limit - 1), resetAt: fresh.resetAt };
   }
 
   if (existing.count >= limit) {
@@ -39,7 +45,11 @@ export function checkRateLimit(
   }
 
   existing.count += 1;
-  return { allowed: true, remaining: limit - existing.count, resetAt: existing.resetAt };
+  return {
+    allowed: true,
+    remaining: Math.max(0, limit - existing.count),
+    resetAt: existing.resetAt,
+  };
 }
 
 export function getClientIp(request: Request): string {

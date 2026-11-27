@@ -14,15 +14,15 @@ import type {
   HouseholdProfile,
   LanguageCode,
 } from '@/lib/types';
+import {
+  loadFirebase,
+  LS_LOGS_KEY,
+  LS_PROFILE_KEY,
+  LS_SNAPSHOT_KEY,
+  useAirWiseSync,
+} from './use-airwise-sync';
 
 export type TabKey = 'now' | 'history' | 'plan' | 'assistant' | 'tracker' | 'community';
-
-const LS_PROFILE_KEY = 'airwise_profile_v1';
-const LS_LOGS_KEY = 'airwise_logs_v1';
-const LS_SNAPSHOT_KEY = 'airwise_last_snapshot_v1';
-const LS_THEME_KEY = 'airwise_theme_v1';
-
-const loadFirebase = () => import('@/lib/firebase');
 
 export function useAirWiseState(initialSnapshot: AirQualitySnapshot) {
   const [activeTab, setActiveTab] = useState<TabKey>('now');
@@ -49,135 +49,19 @@ export function useAirWiseState(initialSnapshot: AirQualitySnapshot) {
     profileRef.current = profile;
   }, [profile]);
 
-  // Hydrate persisted state from localStorage asynchronously
-  useEffect(() => {
-    let active = true;
-    Promise.resolve().then(() => {
-      if (!active) return;
-      try {
-        const savedTheme = localStorage.getItem(LS_THEME_KEY);
-        if (savedTheme === 'dark') {
-          setDarkMode(true);
-          document.documentElement.classList.add('dark');
-        }
-        const savedProfile = localStorage.getItem(LS_PROFILE_KEY);
-        if (savedProfile) {
-          setProfile({ ...DEFAULT_HOUSEHOLD_PROFILE, ...JSON.parse(savedProfile) });
-        }
-        const savedLogs = localStorage.getItem(LS_LOGS_KEY);
-        if (savedLogs) {
-          const parsedLogs = JSON.parse(savedLogs);
-          if (Array.isArray(parsedLogs)) setActionLogs(parsedLogs);
-        }
-        const savedSnap = localStorage.getItem(LS_SNAPSHOT_KEY);
-        if (savedSnap && !navigator.onLine) {
-          setSnapshot(JSON.parse(savedSnap));
-        }
-      } catch {
-        // Ignore storage parse errors
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  // Sync dark mode class on <html>
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem(LS_THEME_KEY, 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem(LS_THEME_KEY, 'light');
-    }
-  }, [darkMode]);
-
-  // Keep <html lang="..."> synchronized with selected EN/HI language
-  useEffect(() => {
-    document.documentElement.lang = profile.language;
-  }, [profile.language]);
-
-  // Startup Firestore check & Auth listener
-  useEffect(() => {
-    let active = true;
-    let unsub: (() => void) | undefined;
-
-    loadFirebase()
-      .then((fb) => {
-        if (!active) return;
-        void fb.testFirestoreConnection();
-
-        unsub = fb.subscribeToAuthState(async (user) => {
-          if (!active) return;
-          setAuthUser(user);
-          if (user) {
-            try {
-              const cloudProfile = await fb.loadHouseholdFromCloud(user.uid);
-              if (cloudProfile && active) {
-                setProfile(cloudProfile);
-                localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(cloudProfile));
-              }
-              const cloudLogs = await fb.loadActionLogsFromCloud(user.uid);
-              if (cloudLogs.length > 0 && active) {
-                setActionLogs(cloudLogs);
-                localStorage.setItem(LS_LOGS_KEY, JSON.stringify(cloudLogs));
-              }
-            } catch (err) {
-              console.warn('Cloud profile sync notice:', err);
-            }
-          } else {
-            setCloudContributions([]);
-          }
-        });
-      })
-      .catch((err) => {
-        console.warn('Firebase client initialization notice:', err);
-      });
-
-    return () => {
-      active = false;
-      unsub?.();
-    };
-  }, []);
-
-  // Fetch live AQI on initial mount
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`/api/aqi?city=${encodeURIComponent(DEFAULT_HOUSEHOLD_PROFILE.city)}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: AirQualitySnapshot | null) => {
-        if (cancelled || !data) return;
-        setSnapshot(data);
-        setPlan(buildRuleBasedDailyPlan(data, profileRef.current, profileRef.current.language));
-        try {
-          localStorage.setItem(LS_SNAPSHOT_KEY, JSON.stringify(data));
-        } catch {
-          // Ignore quota errors
-        }
-      })
-      .catch(() => {
-        // Seed snapshot already rendered
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Sync community contributions when signed in and group changes
-  useEffect(() => {
-    if (!authUser) return;
-    let cancelled = false;
-    loadFirebase()
-      .then((fb) => fb.loadCommunityContributionsFromCloud(profile.communityGroupId, authUser.uid))
-      .then((rows) => {
-        if (!cancelled) setCloudContributions(rows);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [authUser, profile.communityGroupId]);
+  useAirWiseSync({
+    darkMode,
+    setDarkMode,
+    profile,
+    setProfile,
+    profileRef,
+    setSnapshot,
+    setPlan,
+    setActionLogs,
+    setCloudContributions,
+    authUser,
+    setAuthUser,
+  });
 
   const fetchAqi = useCallback(async (params: { city?: string; lat?: number; lon?: number }) => {
     setLoadingAqi(true);
@@ -271,7 +155,9 @@ export function useAirWiseState(initialSnapshot: AirQualitySnapshot) {
         const nextSnap = await fetchAqi({ lat: pos.coords.latitude, lon: pos.coords.longitude });
         if (nextSnap) {
           setLocationNotice(null);
-          setPlan(buildRuleBasedDailyPlan(nextSnap, profileRef.current, profileRef.current.language));
+          setPlan(
+            buildRuleBasedDailyPlan(nextSnap, profileRef.current, profileRef.current.language)
+          );
         }
       },
       () => {
@@ -288,7 +174,9 @@ export function useAirWiseState(initialSnapshot: AirQualitySnapshot) {
     localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(nextProfile));
     setPlan(buildRuleBasedDailyPlan(snapshot, nextProfile, nextLang));
     if (authUser) {
-      void loadFirebase().then((fb) => fb.saveHouseholdToCloud(authUser.uid, nextProfile)).catch(() => {});
+      void loadFirebase()
+        .then((fb) => fb.saveHouseholdToCloud(authUser.uid, nextProfile))
+        .catch(() => {});
     }
   }, [profile, snapshot, authUser]);
 
@@ -298,7 +186,9 @@ export function useAirWiseState(initialSnapshot: AirQualitySnapshot) {
       localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(next));
       void generateDailyPlan(snapshot, next);
       if (authUser) {
-        void loadFirebase().then((fb) => fb.saveHouseholdToCloud(authUser.uid, next)).catch(() => {});
+        void loadFirebase()
+          .then((fb) => fb.saveHouseholdToCloud(authUser.uid, next))
+          .catch(() => {});
       }
     },
     [snapshot, authUser, generateDailyPlan]
@@ -356,7 +246,9 @@ export function useAirWiseState(initialSnapshot: AirQualitySnapshot) {
       setProfile(nextProfile);
       localStorage.setItem(LS_PROFILE_KEY, JSON.stringify(nextProfile));
       if (authUser) {
-        void loadFirebase().then((fb) => fb.saveHouseholdToCloud(authUser.uid, nextProfile)).catch(() => {});
+        void loadFirebase()
+          .then((fb) => fb.saveHouseholdToCloud(authUser.uid, nextProfile))
+          .catch(() => {});
       }
     },
     [profile, authUser]

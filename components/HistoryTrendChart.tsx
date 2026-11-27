@@ -29,6 +29,14 @@ interface HistoryTrendChartProps {
   language: LanguageCode;
 }
 
+const AXIS_TICK = { fontSize: 11, fill: '#475569' };
+const GRID_PROPS = {
+  strokeDasharray: '3 3',
+  stroke: '#94A3B8',
+  strokeOpacity: 0.22,
+  vertical: false,
+} as const;
+
 export const HistoryTrendChart = memo(function HistoryTrendChart({
   data,
   mode,
@@ -55,26 +63,15 @@ export const HistoryTrendChart = memo(function HistoryTrendChart({
     return (
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={enrichedData} margin={{ top: 14, right: 8, left: -8, bottom: 0 }}>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#94A3B8"
-            strokeOpacity={0.22}
-            vertical={false}
-          />
+          <CartesianGrid {...GRID_PROPS} />
           <XAxis
             dataKey="dayLabel"
-            tick={{ fontSize: 11, fill: '#64748B' }}
+            tick={AXIS_TICK}
             tickLine={false}
             axisLine={false}
             interval={xInterval}
           />
-          <YAxis
-            yAxisId="aqi"
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            tickLine={false}
-            axisLine={false}
-            width={42}
-          />
+          <YAxis yAxisId="aqi" tick={AXIS_TICK} tickLine={false} axisLine={false} width={42} />
           <YAxis
             yAxisId="pm25"
             orientation="right"
@@ -143,25 +140,15 @@ export const HistoryTrendChart = memo(function HistoryTrendChart({
               <stop offset="95%" stopColor="#94A3B8" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#94A3B8"
-            strokeOpacity={0.22}
-            vertical={false}
-          />
+          <CartesianGrid {...GRID_PROPS} />
           <XAxis
             dataKey="dayLabel"
-            tick={{ fontSize: 11, fill: '#64748B' }}
+            tick={AXIS_TICK}
             tickLine={false}
             axisLine={false}
             interval={xInterval}
           />
-          <YAxis
-            tick={{ fontSize: 11, fill: '#64748B' }}
-            tickLine={false}
-            axisLine={false}
-            width={42}
-          />
+          <YAxis tick={AXIS_TICK} tickLine={false} axisLine={false} width={42} />
           <Tooltip
             offset={16}
             cursor={{ stroke: '#0F766E', strokeWidth: 1.5, strokeDasharray: '3 3' }}
@@ -182,11 +169,11 @@ export const HistoryTrendChart = memo(function HistoryTrendChart({
             type="monotone"
             dataKey="maxAqi"
             name={isHi ? 'अधिकतम AQI' : 'Peak AQI'}
-            stroke="#64748B"
+            stroke="#475569"
             strokeWidth={1.5}
             strokeDasharray="4 3"
             fill="url(#airwiseHistoryPeakAqi)"
-            activeDot={{ r: 4.5, fill: '#64748B', stroke: '#FFFFFF', strokeWidth: 1.5 }}
+            activeDot={{ r: 4.5, fill: '#475569', stroke: '#FFFFFF', strokeWidth: 1.5 }}
             isAnimationActive={false}
           />
           <Area
@@ -196,7 +183,9 @@ export const HistoryTrendChart = memo(function HistoryTrendChart({
             stroke="#BE123C"
             strokeWidth={2.5}
             fill="url(#airwiseHistoryAvgAqi)"
-            dot={showDots ? { r: 3.5, fill: '#BE123C', stroke: '#FFFFFF', strokeWidth: 1.5 } : false}
+            dot={
+              showDots ? { r: 3.5, fill: '#BE123C', stroke: '#FFFFFF', strokeWidth: 1.5 } : false
+            }
             activeDot={{ r: 6, fill: '#BE123C', stroke: '#FFFFFF', strokeWidth: 2 }}
             isAnimationActive={false}
           />
@@ -208,26 +197,15 @@ export const HistoryTrendChart = memo(function HistoryTrendChart({
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={enrichedData} margin={{ top: 14, right: 12, left: -8, bottom: 0 }}>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="#94A3B8"
-          strokeOpacity={0.22}
-          vertical={false}
-        />
+        <CartesianGrid {...GRID_PROPS} />
         <XAxis
           dataKey="dayLabel"
-          tick={{ fontSize: 11, fill: '#64748B' }}
+          tick={AXIS_TICK}
           tickLine={false}
           axisLine={false}
           interval={xInterval}
         />
-        <YAxis
-          tick={{ fontSize: 11, fill: '#64748B' }}
-          tickLine={false}
-          axisLine={false}
-          width={44}
-          unit="µg"
-        />
+        <YAxis tick={AXIS_TICK} tickLine={false} axisLine={false} width={44} unit="µg" />
         <Tooltip
           offset={16}
           cursor={{ fill: 'rgba(15, 118, 110, 0.08)' }}
@@ -252,11 +230,7 @@ export const HistoryTrendChart = memo(function HistoryTrendChart({
           isAnimationActive={false}
         >
           {enrichedData.map((entry) => (
-            <Cell
-              key={entry.dateIso}
-              fill={getAqiBand(entry.avgAqi).hex}
-              fillOpacity={0.85}
-            />
+            <Cell key={entry.dateIso} fill={getAqiBand(entry.avgAqi).hex} fillOpacity={0.85} />
           ))}
         </Bar>
       </BarChart>

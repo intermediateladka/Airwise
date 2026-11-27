@@ -7,10 +7,7 @@ interface State {
   message: string;
 }
 
-export class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  State
-> {
+export class ErrorBoundary extends React.Component<{ children: React.ReactNode }, State> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false, message: '' };
@@ -29,7 +26,8 @@ export class ErrorBoundary extends React.Component<
         <div className="mx-auto my-16 max-w-lg rounded-xl border border-rose-200 bg-white p-6 text-slate-900 shadow-xs dark:border-rose-900/60 dark:bg-[#131C26] dark:text-slate-100">
           <h2 className="text-lg font-semibold">Something went wrong</h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            AirWise encountered a recoverable display error. You can reload to restore your cached AQI dashboard.
+            AirWise encountered a recoverable display error. You can reload to restore your cached
+            AQI dashboard.
           </p>
           <button
             type="button"

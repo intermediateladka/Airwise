@@ -1,9 +1,5 @@
 import { NextRequest } from 'next/server';
-import {
-  detectPromptInjection,
-  findBestOutdoorWindows,
-  sanitizeUserText,
-} from '@/lib/air-quality';
+import { detectPromptInjection, findBestOutdoorWindows, sanitizeUserText } from '@/lib/air-quality';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { serverConfig } from '@/lib/server/config';
 import { buildChatFallbackAnswer } from '@/lib/server/fallbacks';

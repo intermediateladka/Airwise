@@ -22,7 +22,10 @@ export function NowAlertsSection({ alerts, threshold, language, t }: NowAlertsSe
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 dark:border-slate-800">
         <div className="flex items-center gap-2">
           <Bell className="h-4 w-4 text-teal-700 dark:text-teal-400" aria-hidden="true" />
-          <h2 id="alerts-heading" className="text-base font-semibold text-slate-900 dark:text-slate-100">
+          <h2
+            id="alerts-heading"
+            className="text-base font-semibold text-slate-900 dark:text-slate-100"
+          >
             {t.alertsTitle}
           </h2>
         </div>

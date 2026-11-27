@@ -1,6 +1,7 @@
 # AirWise Firestore Security Specification (Phase 0 TDD)
 
 ## 1. Data Invariants
+
 1. **Strict Private Ownership**: A `households/{userId}` document contains health-sensitive flags (asthma, pregnancy, heart condition) and is strictly readable, writable, and deletable ONLY by the verified user whose `request.auth.uid == userId`. Collection listing on `/households` is denied.
 2. **Parent-Synced Action Logs**: Every `households/{userId}/actionLogs/{logId}` must have `ownerId == userId == request.auth.uid`, valid bounded metrics, server `request.time` on `createdAt`, and an existing parent household document on create.
 3. **Zero-PII Community Leaderboard**: `communityGroups/{groupId}` and `contributions/{userId}` never accept email, phone, or address fields. Strict `hasOnly()` blocks shadow fields.
@@ -8,6 +9,7 @@
 5. **Denial-of-Wallet Protection**: Every document ID matches `^[a-zA-Z0-9_\-]+$` (`<= 128` chars), every string has explicit `.size()` bounds, and every array has an explicit `.size() <= MAX` bound.
 
 ## 2. The "Dirty Dozen" Adversarial Payloads (Must All Return PERMISSION_DENIED)
+
 1. **Unauthenticated Household Read**: `GET /households/userA` with `auth = null`.
 2. **Cross-Tenant Health Profile Read**: `GET /households/userA` as `userB`.
 3. **Unverified Email Write**: `CREATE /households/userA` with `email_verified: false`.

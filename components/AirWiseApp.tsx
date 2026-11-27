@@ -1,6 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useMemo, type FormEvent } from 'react';
 import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import {
@@ -18,40 +17,17 @@ import { getTranslations } from '@/lib/i18n';
 import type { AirQualitySnapshot, LanguageCode } from '@/lib/types';
 import { AppHeader } from './AppHeader';
 import { ErrorBoundary } from './ErrorBoundary';
+import {
+  AssistantView,
+  CommunityView,
+  DailyPlanView,
+  HistoryView,
+  HouseholdProfileModal,
+  ImpactTrackerView,
+} from './LazyViews';
 import { LocationToolbar } from './LocationToolbar';
 import { MobileBottomNav, type MobileNavItem } from './MobileBottomNav';
 import { NowDashboard } from './NowDashboard';
-
-const TabLoadingFallback = () => (
-  <div className="rounded-xl border border-slate-200 bg-white p-8 text-sm text-slate-600 dark:border-slate-800 dark:bg-[#131C26] dark:text-slate-300">
-    Loading view...
-  </div>
-);
-
-const HistoryView = dynamic(
-  () => import('./HistoryView').then((mod) => mod.HistoryView),
-  { loading: TabLoadingFallback }
-);
-const DailyPlanView = dynamic(
-  () => import('./DailyPlanView').then((mod) => mod.DailyPlanView),
-  { loading: TabLoadingFallback }
-);
-const AssistantView = dynamic(
-  () => import('./AssistantView').then((mod) => mod.AssistantView),
-  { loading: TabLoadingFallback }
-);
-const ImpactTrackerView = dynamic(
-  () => import('./ImpactTrackerView').then((mod) => mod.ImpactTrackerView),
-  { loading: TabLoadingFallback }
-);
-const CommunityView = dynamic(
-  () => import('./CommunityView').then((mod) => mod.CommunityView),
-  { loading: TabLoadingFallback }
-);
-const HouseholdProfileModal = dynamic(
-  () => import('./HouseholdProfileModal').then((mod) => mod.HouseholdProfileModal),
-  { ssr: false }
-);
 
 interface AirWiseAppProps {
   initialSnapshot: AirQualitySnapshot;
@@ -190,7 +166,9 @@ export function AirWiseApp({ initialSnapshot }: AirWiseAppProps) {
                     loading={state.loadingPlan}
                     language={language}
                     t={t}
-                    onRefreshPlan={() => void state.generateDailyPlan(state.snapshot, state.profile)}
+                    onRefreshPlan={() =>
+                      void state.generateDailyPlan(state.snapshot, state.profile)
+                    }
                   />
                 )}
 
@@ -232,9 +210,12 @@ export function AirWiseApp({ initialSnapshot }: AirWiseAppProps) {
           <footer className="hidden border-t border-slate-200 bg-white/60 py-5 text-xs text-slate-600 md:block dark:border-slate-800 dark:bg-[#0B1117] dark:text-slate-400">
             <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6">
               <span>
-                AirWise · AI &amp; rule-based environmental guidance (not medical advice). Follow official CPCB/IMD/NDMA advisories; emergency: 112 / 108.
+                AirWise · AI &amp; rule-based environmental guidance (not medical advice). Follow
+                official CPCB/IMD/NDMA advisories; emergency: 112 / 108.
               </span>
-              <span>Data: Open-Meteo Air Quality &amp; Weather · Privacy-first household settings</span>
+              <span>
+                Data: Open-Meteo Air Quality &amp; Weather · Privacy-first household settings
+              </span>
             </div>
           </footer>
 

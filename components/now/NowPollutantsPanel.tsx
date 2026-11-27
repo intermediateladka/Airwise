@@ -24,7 +24,11 @@ export function NowPollutantsPanel({
     { name: 'PM10', desc: isHi ? 'धूल व मोटे कण' : 'Coarse dust', val: `${snapshot.pm10} µg/m³` },
     { name: 'NO2', desc: isHi ? 'ट्रैफ़िक गैस' : 'Nitrogen dioxide', val: `${snapshot.no2} µg/m³` },
     { name: 'O3', desc: isHi ? 'ओज़ोन' : 'Ground ozone', val: `${snapshot.o3} µg/m³` },
-    { name: 'CO', desc: isHi ? 'कार्बन मोनोऑक्साइड' : 'Carbon monoxide', val: `${snapshot.co} mg/m³` },
+    {
+      name: 'CO',
+      desc: isHi ? 'कार्बन मोनोऑक्साइड' : 'Carbon monoxide',
+      val: `${snapshot.co} mg/m³`,
+    },
   ];
 
   return (
@@ -42,10 +46,12 @@ export function NowPollutantsPanel({
         <dl className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
           {pollutants.map((row) => (
             <div key={row.name} className="flex items-center justify-between py-2.5 text-sm">
-              <div>
-                <dt className="font-semibold text-slate-900 dark:text-slate-100">{row.name}</dt>
-                <dd className="text-xs text-slate-600 dark:text-slate-300">{row.desc}</dd>
-              </div>
+              <dt className="font-semibold text-slate-900 dark:text-slate-100">
+                {row.name}
+                <span className="block text-xs font-normal text-slate-600 dark:text-slate-300">
+                  {row.desc}
+                </span>
+              </dt>
               <dd className="font-mono text-sm font-medium tabular-nums text-slate-900 dark:text-slate-100">
                 {row.val}
               </dd>

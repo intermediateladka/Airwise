@@ -98,7 +98,10 @@ export function LocationToolbar({
           })}
         </div>
 
-        <span className="hidden h-5 w-px bg-slate-200 sm:inline-block dark:bg-slate-800" aria-hidden="true" />
+        <span
+          className="hidden h-5 w-px bg-slate-200 sm:inline-block dark:bg-slate-800"
+          aria-hidden="true"
+        />
 
         <button
           type="button"

@@ -31,9 +31,7 @@ export function MobileBottomNav({ items, activeTab, onSelectTab }: MobileBottomN
             onClick={() => onSelectTab(item.key)}
             aria-current={active ? 'page' : undefined}
             className={`flex min-h-[54px] flex-col items-center justify-center gap-0.5 px-0.5 text-[10px] font-medium ${
-              active
-                ? 'text-teal-800 dark:text-teal-300'
-                : 'text-slate-600 dark:text-slate-400'
+              active ? 'text-teal-800 dark:text-teal-300' : 'text-slate-600 dark:text-slate-400'
             }`}
           >
             <Icon className="h-4 w-4" aria-hidden={true} />

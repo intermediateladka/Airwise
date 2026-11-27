@@ -16,12 +16,7 @@ interface ProfileStepHomeProps {
   onToggleMask: (mask: MaskType) => void;
 }
 
-export function ProfileStepHome({
-  draft,
-  language,
-  onChange,
-  onToggleMask,
-}: ProfileStepHomeProps) {
+export function ProfileStepHome({ draft, language, onChange, onToggleMask }: ProfileStepHomeProps) {
   const isHi = language === 'hi';
 
   const masks: ReadonlyArray<[MaskType, string]> = [
@@ -60,7 +55,11 @@ export function ProfileStepHome({
         <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
           {isHi ? 'उपलब्ध मास्क प्रकार' : 'Mask types currently owned'}
         </p>
-        <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label={isHi ? 'उपलब्ध मास्क प्रकार' : 'Mask types currently owned'}>
+        <div
+          className="mt-2 flex flex-wrap gap-2"
+          role="group"
+          aria-label={isHi ? 'उपलब्ध मास्क प्रकार' : 'Mask types currently owned'}
+        >
           {masks.map(([val, label]) => {
             const active = draft.maskTypes.includes(val);
             return (
@@ -115,15 +114,19 @@ export function ProfileStepHome({
           <select
             id="fuel-select"
             value={draft.cookingFuel}
-            onChange={(e) =>
-              onChange({ ...draft, cookingFuel: e.target.value as CookingFuelType })
-            }
+            onChange={(e) => onChange({ ...draft, cookingFuel: e.target.value as CookingFuelType })}
             className="mt-1.5 min-h-[42px] w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           >
-            <option value="png_piped">{isHi ? 'पाइप प्राकृतिक गैस (PNG)' : 'Piped Natural Gas (PNG)'}</option>
+            <option value="png_piped">
+              {isHi ? 'पाइप प्राकृतिक गैस (PNG)' : 'Piped Natural Gas (PNG)'}
+            </option>
             <option value="lpg">{isHi ? 'LPG सिलेंडर' : 'LPG Cylinder'}</option>
-            <option value="induction_electric">{isHi ? 'इंडक्शन / इलेक्ट्रिक' : 'Induction / Electric'}</option>
-            <option value="biomass_solid">{isHi ? 'लकड़ी / ठोस ईंधन' : 'Solid fuel / Biomass'}</option>
+            <option value="induction_electric">
+              {isHi ? 'इंडक्शन / इलेक्ट्रिक' : 'Induction / Electric'}
+            </option>
+            <option value="biomass_solid">
+              {isHi ? 'लकड़ी / ठोस ईंधन' : 'Solid fuel / Biomass'}
+            </option>
           </select>
         </div>
 

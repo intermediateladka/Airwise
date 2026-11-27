@@ -9,7 +9,9 @@ export function createRequestId(): string {
 function getRequestHostOrigin(request: Request): string | null {
   const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
   if (!host) return null;
-  const proto = request.headers.get('x-forwarded-proto') || (host.startsWith('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https');
+  const proto =
+    request.headers.get('x-forwarded-proto') ||
+    (host.startsWith('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https');
   try {
     return new URL(`${proto}://${host}`).origin;
   } catch {
@@ -19,7 +21,7 @@ function getRequestHostOrigin(request: Request): string | null {
 
 export function isOriginAllowed(request: Request): boolean {
   const origin = request.headers.get('origin');
-  // Same-origin GETs, SSR fetches, and curl requests may omit Origin
+  // Same-origin GETs, SSR fetches, and server-side calls may omit Origin
   if (!origin) return true;
 
   const hostOrigin = getRequestHostOrigin(request);
@@ -34,6 +36,7 @@ export function getCorsHeaders(request: Request): Record<string, string> {
     Vary: 'Origin',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, X-Request-Id',
+    'X-Content-Type-Options': 'nosniff',
   };
 
   if (origin && isOriginAllowed(request)) {
@@ -48,7 +51,7 @@ export function handleCorsPreflight(request: Request): NextResponse {
   if (!isOriginAllowed(request)) {
     return NextResponse.json(
       { error: 'Origin not allowed.', requestId },
-      { status: 403, headers: { 'X-Request-Id': requestId } }
+      { status: 403, headers: { 'X-Request-Id': requestId, 'X-Content-Type-Options': 'nosniff' } }
     );
   }
   return new NextResponse(null, {
@@ -70,6 +73,7 @@ export function jsonOk<T>(
   return NextResponse.json(data, {
     status,
     headers: {
+      'Cache-Control': 'no-store',
       ...getCorsHeaders(request),
       'X-Request-Id': requestId,
       ...extraHeaders,
@@ -92,6 +96,7 @@ export function jsonError(
     {
       status,
       headers: {
+        'Cache-Control': 'no-store',
         ...getCorsHeaders(request),
         'X-Request-Id': requestId,
         ...extraHeaders,
@@ -101,17 +106,26 @@ export function jsonError(
 }
 
 export type BodyReadResult =
-  | { ok: true; data: unknown }
-  | { ok: false; status: 400 | 413; message: string };
+  { ok: true; data: unknown } | { ok: false; status: 400 | 413 | 415; message: string };
 
 /**
- * Reads a JSON request body while strictly enforcing maxBytes (default 50KB)
- * to prevent memory/CPU exhaustion before schema validation.
+ * Reads a JSON request body while strictly enforcing:
+ * 1) JSON Content-Type (blocking simple cross-site form POSTs)
+ * 2) maxBytes UTF-8 size cap (default 50KB) before JSON parsing
  */
 export async function readJsonBodyWithLimit(
   request: Request,
   maxBytes = serverConfig.maxBodyBytes
 ): Promise<BodyReadResult> {
+  const contentType = request.headers.get('content-type');
+  if (contentType && !contentType.toLowerCase().includes('application/json')) {
+    return {
+      ok: false,
+      status: 415,
+      message: 'Content-Type must be application/json.',
+    };
+  }
+
   const contentLengthHeader = request.headers.get('content-length');
   if (contentLengthHeader) {
     const declaredBytes = Number.parseInt(contentLengthHeader, 10);

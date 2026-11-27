@@ -99,9 +99,7 @@ export async function GET(request: NextRequest) {
 
   try {
     if (lat === undefined || lon === undefined) {
-      const preset = PRESET_CITIES.find(
-        (c) => c.name.toLowerCase() === locationName.toLowerCase()
-      );
+      const preset = PRESET_CITIES.find((c) => c.name.toLowerCase() === locationName.toLowerCase());
       if (preset) {
         lat = preset.latitude;
         lon = preset.longitude;
@@ -124,7 +122,11 @@ export async function GET(request: NextRequest) {
             }>;
           };
           const first = geoJson?.results?.[0];
-          if (first && Number.isFinite(Number(first.latitude)) && Number.isFinite(Number(first.longitude))) {
+          if (
+            first &&
+            Number.isFinite(Number(first.latitude)) &&
+            Number.isFinite(Number(first.longitude))
+          ) {
             lat = Number(first.latitude);
             lon = Number(first.longitude);
             locationName = sanitizeUserText(String(first.name ?? locationName), 80) || locationName;

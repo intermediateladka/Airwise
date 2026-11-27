@@ -73,7 +73,8 @@ export const AQI_BANDS: AqiBandInfo[] = [
     max: 300,
     labelEn: 'Very Unhealthy',
     labelHi: 'बहुत अस्वस्थ',
-    meaningEn: 'Avoid outdoor exercise. Keep windows closed during smog peaks and filter indoor air.',
+    meaningEn:
+      'Avoid outdoor exercise. Keep windows closed during smog peaks and filter indoor air.',
     meaningHi: 'बाहरी व्यायाम से बचें। स्मॉग पीक के समय खिड़कियाँ बंद रखें और घर की हवा फ़िल्टर करें।',
     symbol: 'octagon',
     hex: '#7E22CE',
@@ -87,7 +88,8 @@ export const AQI_BANDS: AqiBandInfo[] = [
     max: 999,
     labelEn: 'Severe / Hazardous',
     labelHi: 'गंभीर / खतरनाक',
-    meaningEn: 'Health alert: stay indoors as much as possible, seal gaps, and run HEPA filtration.',
+    meaningEn:
+      'Health alert: stay indoors as much as possible, seal gaps, and run HEPA filtration.',
     meaningHi: 'स्वास्थ्य चेतावनी: यथासंभव घर के अंदर रहें, दरारें बंद करें और HEPA फ़िल्टर चलाएँ।',
     symbol: 'hazard',
     hex: '#881337',

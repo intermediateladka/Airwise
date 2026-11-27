@@ -28,11 +28,17 @@ function makeNextRequest(
   url: string,
   init?: { method?: string; headers?: Record<string, string>; body?: string }
 ): NextRequest {
+  const defaultHeaders: Record<string, string> = {
+    host: 'localhost:3000',
+    'x-forwarded-for': '203.0.113.10',
+  };
+  if (init?.method === 'POST' && !init?.headers?.['content-type']) {
+    defaultHeaders['content-type'] = 'application/json';
+  }
   return new NextRequest(url, {
     method: init?.method ?? 'GET',
     headers: {
-      host: 'localhost:3000',
-      'x-forwarded-for': '203.0.113.10',
+      ...defaultHeaders,
       ...(init?.headers ?? {}),
     },
     body: init?.body,
@@ -80,6 +86,7 @@ describe('HTTP Security Helpers (Body Cap & CORS)', () => {
     const huge = JSON.stringify({ payload: 'x'.repeat(55 * 1024) });
     const req = new Request('http://localhost:3000/api/chat', {
       method: 'POST',
+      headers: { 'content-type': 'application/json' },
       body: huge,
     });
     const res = await readJsonBodyWithLimit(req, 50 * 1024);
@@ -89,9 +96,19 @@ describe('HTTP Security Helpers (Body Cap & CORS)', () => {
     }
   });
 
-  it('rejects malformed JSON with 400', async () => {
+  it('rejects malformed JSON with 400 and non-JSON Content-Type with 415', async () => {
+    const formReq = new Request('http://localhost:3000/api/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'text/plain' },
+      body: '{}',
+    });
+    const formRes = await readJsonBodyWithLimit(formReq);
+    assert.equal(formRes.ok, false);
+    if (!formRes.ok) assert.equal(formRes.status, 415);
+
     const req = new Request('http://localhost:3000/api/chat', {
       method: 'POST',
+      headers: { 'content-type': 'application/json' },
       body: '{invalid-json',
     });
     const res = await readJsonBodyWithLimit(req);
@@ -238,7 +255,12 @@ describe('Unified Gemini Helper (Mocked SDK)', () => {
       timeoutMs: 30,
       clientOverride: mockClient,
       fallback: () =>
-        buildChatFallbackAnswer('Can I open windows?', sampleSnapshot, DEFAULT_HOUSEHOLD_PROFILE, 'en'),
+        buildChatFallbackAnswer(
+          'Can I open windows?',
+          sampleSnapshot,
+          DEFAULT_HOUSEHOLD_PROFILE,
+          'en'
+        ),
     });
     assert.equal(aborted, true);
     assert.equal(result.source, 'rule-fallback');

@@ -15,10 +15,7 @@ export function ProfileStepMembers({ draft, language, onChange }: ProfileStepMem
     ['hasChildren', isHi ? 'बच्चे (12 वर्ष से कम)' : 'Children (under 12)'],
     ['hasElderly', isHi ? 'बुजुर्ग (60+ वर्ष)' : 'Elderly members (60+)'],
     ['hasPregnant', isHi ? 'गर्भवती सदस्य' : 'Pregnant member'],
-    [
-      'hasAsthmaOrRespiratory',
-      isHi ? 'अस्थमा / श्वसन संवेदनशीलता' : 'Asthma / respiratory condition',
-    ],
+    ['hasAsthmaOrRespiratory', isHi ? 'अस्थमा / श्वसन संवेदनशीलता' : 'Asthma / respiratory condition'],
     ['hasHeartCondition', isHi ? 'हृदय रोग संवेदनशीलता' : 'Heart / cardiovascular condition'],
   ] as const;
 

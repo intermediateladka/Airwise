@@ -160,7 +160,8 @@ const EN: Translations = {
   stepNext: 'Continue',
   saveProfile: 'Save Household Profile',
   historyTitle: 'Air Quality History',
-  historySubtitle: 'Track daily PM2.5 and US AQI trends across 7, 14, 30 days, or any custom date range.',
+  historySubtitle:
+    'Track daily PM2.5 and US AQI trends across 7, 14, 30 days, or any custom date range.',
   historyViewCombined: 'AQI + PM2.5',
   historyViewAqi: 'AQI Trend',
   historyViewPm25: 'PM2.5 Trend',
@@ -213,8 +214,7 @@ const HI: Translations = {
   assumptionsLabel: 'पारदर्शी मान्यताएँ',
   memberAdviceHeading: 'सदस्य के अनुसार सलाह',
   assistantTitle: 'AirWise से पूछें',
-  assistantSubtitle:
-    'लाइव AQI पूर्वानुमान और आपके परिवार की प्रोफ़ाइल के आधार पर व्यावहारिक प्रश्न पूछें।',
+  assistantSubtitle: 'लाइव AQI पूर्वानुमान और आपके परिवार की प्रोफ़ाइल के आधार पर व्यावहारिक प्रश्न पूछें।',
   assistantPlaceholder: 'पूछें जैसे, "क्या मेरा 6 साल का बच्चा शाम 5 बजे बाहर खेल सकता है?"',
   assistantSend: 'पूछें',
   trackerTitle: 'स्वच्छ वायु प्रभाव ट्रैकर',

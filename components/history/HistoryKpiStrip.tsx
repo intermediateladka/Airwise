@@ -38,7 +38,9 @@ export function HistoryKpiStrip({
         <p className="mt-2 font-mono text-3xl font-bold tabular-nums text-slate-950 dark:text-white">
           {summary.avgAqi7d}
         </p>
-        <div className={`mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium ${avgBand.badgeTextClass}`}>
+        <div
+          className={`mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium ${avgBand.badgeTextClass}`}
+        >
           <AqiCategoryIcon symbol={avgBand.symbol} className="h-3.5 w-3.5" />
           <span>{isHi ? avgBand.labelHi : avgBand.labelEn}</span>
         </div>
